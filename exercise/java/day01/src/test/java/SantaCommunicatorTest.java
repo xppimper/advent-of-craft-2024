@@ -1,3 +1,6 @@
+import communication.Christmas;
+import communication.Location;
+import communication.Reindeer;
 import communication.SantaCommunicator;
 import doubles.TestLogger;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,17 +23,20 @@ class SantaCommunicatorTest {
 
     @Test
     void composeMessage() {
-        var message = communicator.composeMessage(DASHER, NORTH_POLE, 5, numberOfDayBeforeChristmas);
+        Location location = new Location(NORTH_POLE, 5);
+        Reindeer reindeer = new Reindeer(DASHER);
+        var message = communicator.composeMessage(reindeer, location, Christmas.declareChristmasAt(numberOfDayBeforeChristmas));
         assertThat(message).isEqualTo("Dear Dasher, please return from North Pole in 17 day(s) to be ready and rest before Christmas.");
     }
 
     @Test
     void shouldDetectOverdueReindeer() {
+        Location location = new Location(NORTH_POLE, numberOfDayBeforeChristmas);
+        Reindeer reindeer = new Reindeer(DASHER);
         var overdue = communicator.isOverdue(
-                DASHER,
-                NORTH_POLE,
-                numberOfDayBeforeChristmas,
-                numberOfDayBeforeChristmas,
+                reindeer,
+                location,
+                Christmas.declareChristmasAt(numberOfDayBeforeChristmas),
                 logger);
 
         assertThat(overdue).isTrue();
@@ -40,12 +46,13 @@ class SantaCommunicatorTest {
 
     @Test
     void shouldReturnFalseWhenNoOverdue() {
+        Location location = new Location(NORTH_POLE, numberOfDayBeforeChristmas - numberOfDaysToRest - 1);
+        Reindeer reindeer = new Reindeer(DASHER);
         assertThat(
                 communicator.isOverdue(
-                        DASHER,
-                        NORTH_POLE,
-                        numberOfDayBeforeChristmas - numberOfDaysToRest - 1,
-                        numberOfDayBeforeChristmas,
+                        reindeer,
+                        location,
+                        Christmas.declareChristmasAt(numberOfDayBeforeChristmas),
                         logger)
         ).isFalse();
     }
